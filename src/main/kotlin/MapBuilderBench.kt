@@ -47,4 +47,14 @@ public open class MapBuilderBench {
         }
         return mapBuilder
     }
+
+    @Benchmark
+    fun storeEntries(): Map<String, String> {
+        var lastEntry = mapBuilder.entries.first()
+        for (entry in mapBuilder) {
+            entry.setValue(lastEntry.value)
+            lastEntry = entry
+        }
+        return mapBuilder
+    }
 }
