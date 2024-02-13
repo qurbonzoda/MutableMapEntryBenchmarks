@@ -1,0 +1,28 @@
+# VM mode: 64 bits
+# Compressed references (oops): 3-bit shift
+# Compressed class pointers: 0-bit shift and 0x800000000 base
+# Object alignment: 8 bytes
+#                       ref, bool, byte, char, shrt,  int,  flt,  lng,  dbl
+# Field sizes:            4,    1,    1,    2,    2,    4,    4,    8,    8
+# Array element sizes:    4,    1,    1,    2,    2,    4,    4,    8,    8
+# Array base offsets:    16,   16,   16,   16,   16,   16,   16,   16,   16
+
+bench.MapBuilder$EntryRef object internals:
+OFF  SZ               TYPE DESCRIPTION               VALUE
+  0   8                    (object header: mark)     N/A
+  8   4                    (object header: class)    N/A
+ 12   4                int EntryRef.index            N/A
+ 16   4   bench.MapBuilder EntryRef.map              N/A
+ 20   4                    (object alignment gap)
+Instance size: 24 bytes
+Space losses: 0 bytes internal + 4 bytes external = 4 bytes total
+
+bench.CheckingMapBuilder$EntryRef object internals:
+OFF  SZ                       TYPE DESCRIPTION                 VALUE
+  0   8                            (object header: mark)       N/A
+  8   4                            (object header: class)      N/A
+ 12   4                        int EntryRef.index              N/A
+ 16   4                        int EntryRef.expectedModCount   N/A
+ 20   4   bench.CheckingMapBuilder EntryRef.map                N/A
+Instance size: 24 bytes
+Space losses: 0 bytes internal + 0 bytes external = 0 bytes total
