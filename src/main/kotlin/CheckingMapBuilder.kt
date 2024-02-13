@@ -1,16 +1,9 @@
-/*
- * Copyright 2010-2021 JetBrains s.r.o. and Kotlin Programming Language contributors.
- * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
- */
-
 package bench
 
-import java.io.Externalizable
-import java.io.InvalidObjectException
 import java.io.NotSerializableException
 import java.io.Serializable
 
-internal class MapBuilder<K, V> private constructor(
+internal class CheckingMapBuilder<K, V> private constructor(
     // keys in insert order
     private var keysArray: Array<K>,
     // values in insert order, allocated only when actually used, always null in pure HashSet
@@ -41,9 +34,9 @@ internal class MapBuilder<K, V> private constructor(
     override var size: Int = 0
         private set
 
-    private var keysView: MapBuilderKeys<K>? = null
-    private var valuesView: MapBuilderValues<V>? = null
-    private var entriesView: MapBuilderEntries<K, V>? = null
+    private var keysView: CheckingMapBuilderKeys<K>? = null
+    private var valuesView: CheckingMapBuilderValues<V>? = null
+    private var entriesView: CheckingMapBuilderEntries<K, V>? = null
 
     internal var isReadOnly: Boolean = false
         private set
@@ -131,7 +124,7 @@ internal class MapBuilder<K, V> private constructor(
     override val keys: MutableSet<K> get() {
         val cur = keysView
         return if (cur == null) {
-            val new = MapBuilderKeys(this)
+            val new = CheckingMapBuilderKeys(this)
             keysView = new
             new
         } else cur
@@ -140,7 +133,7 @@ internal class MapBuilder<K, V> private constructor(
     override val values: MutableCollection<V> get() {
         val cur = valuesView
         return if (cur == null) {
-            val new = MapBuilderValues(this)
+            val new = CheckingMapBuilderValues(this)
             valuesView = new
             new
         } else cur
@@ -149,7 +142,7 @@ internal class MapBuilder<K, V> private constructor(
     override val entries: MutableSet<MutableMap.MutableEntry<K, V>> get() {
         val cur = entriesView
         return if (cur == null) {
-            val new = MapBuilderEntries(this)
+            val new = CheckingMapBuilderEntries(this)
             entriesView = new
             return new
         } else cur
@@ -486,7 +479,7 @@ internal class MapBuilder<K, V> private constructor(
         private const val INITIAL_MAX_PROBE_DISTANCE = 2
         private const val TOMBSTONE = -1
 
-        internal val Empty = MapBuilder<Nothing, Nothing>(0).also { it.isReadOnly = true }
+        internal val Empty = CheckingMapBuilder<Nothing, Nothing>(0).also { it.isReadOnly = true }
 
         private fun computeHashSize(capacity: Int): Int = (capacity.coerceAtLeast(1) * 3).takeHighestOneBit()
 
@@ -494,7 +487,7 @@ internal class MapBuilder<K, V> private constructor(
     }
 
     internal open class Itr<K, V>(
-        internal val map: MapBuilder<K, V>
+        internal val map: CheckingMapBuilder<K, V>
     ) {
         internal var index = 0
         internal var lastIndex: Int = -1
@@ -526,7 +519,7 @@ internal class MapBuilder<K, V> private constructor(
         }
     }
 
-    internal class KeysItr<K, V>(map: MapBuilder<K, V>) : Itr<K, V>(map), MutableIterator<K> {
+    internal class KeysItr<K, V>(map: CheckingMapBuilder<K, V>) : Itr<K, V>(map), MutableIterator<K> {
         override fun next(): K {
             checkForComodification()
             if (index >= map.length) throw NoSuchElementException()
@@ -538,7 +531,7 @@ internal class MapBuilder<K, V> private constructor(
 
     }
 
-    internal class ValuesItr<K, V>(map: MapBuilder<K, V>) : Itr<K, V>(map), MutableIterator<V> {
+    internal class ValuesItr<K, V>(map: CheckingMapBuilder<K, V>) : Itr<K, V>(map), MutableIterator<V> {
         override fun next(): V {
             checkForComodification()
             if (index >= map.length) throw NoSuchElementException()
@@ -549,7 +542,7 @@ internal class MapBuilder<K, V> private constructor(
         }
     }
 
-    internal class EntriesItr<K, V>(map: MapBuilder<K, V>) : Itr<K, V>(map),
+    internal class EntriesItr<K, V>(map: CheckingMapBuilder<K, V>) : Itr<K, V>(map),
         MutableIterator<MutableMap.MutableEntry<K, V>> {
         override fun next(): EntryRef<K, V> {
             checkForComodification()
@@ -581,16 +574,25 @@ internal class MapBuilder<K, V> private constructor(
     }
 
     internal class EntryRef<K, V>(
-        private val map: MapBuilder<K, V>,
+        private val map: CheckingMapBuilder<K, V>,
         private val index: Int
     ) : MutableMap.MutableEntry<K, V> {
+        private val expectedModCount = map.modCount
+
         override val key: K
-            get() = map.keysArray[index]
+            get() {
+                checkForComodification()
+                return map.keysArray[index]
+            }
 
         override val value: V
-            get() = map.valuesArray!![index]
+            get() {
+                checkForComodification()
+                return map.valuesArray!![index]
+            }
 
         override fun setValue(newValue: V): V {
+            checkForComodification()
             map.checkIsMutable()
             val valuesArray = map.allocateValuesArray()
             val oldValue = valuesArray[index]
@@ -606,11 +608,16 @@ internal class MapBuilder<K, V> private constructor(
         override fun hashCode(): Int = key.hashCode() xor value.hashCode()
 
         override fun toString(): String = "$key=$value"
+
+        private fun checkForComodification() {
+            if (map.modCount != expectedModCount)
+                throw ConcurrentModificationException()
+        }
     }
 }
 
-private class MapBuilderKeys<E> internal constructor(
-    private val backing: MapBuilder<E, *>
+private class CheckingMapBuilderKeys<E> internal constructor(
+    private val backing: CheckingMapBuilder<E, *>
 ) : MutableSet<E>, AbstractMutableSet<E>() {
 
     override val size: Int get() = backing.size
@@ -633,8 +640,8 @@ private class MapBuilderKeys<E> internal constructor(
     }
 }
 
-private class MapBuilderValues<V> internal constructor(
-    val backing: MapBuilder<*, V>
+private class CheckingMapBuilderValues<V> internal constructor(
+    val backing: CheckingMapBuilder<*, V>
 ) : MutableCollection<V>, AbstractMutableCollection<V>() {
 
     override val size: Int get() = backing.size
@@ -658,14 +665,14 @@ private class MapBuilderValues<V> internal constructor(
 }
 
 // intermediate abstract class to workaround KT-43321
-private abstract class AbstractMapBuilderEntrySet<E : Map.Entry<K, V>, K, V> : AbstractMutableSet<E>() {
+private abstract class AbstractCheckingMapBuilderEntrySet<E : Map.Entry<K, V>, K, V> : AbstractMutableSet<E>() {
     final override fun contains(element: E): Boolean = containsEntry(element)
     abstract fun containsEntry(element: Map.Entry<K, V>): Boolean
 }
 
-private class MapBuilderEntries<K, V> internal constructor(
-    val backing: MapBuilder<K, V>
-) : AbstractMapBuilderEntrySet<MutableMap.MutableEntry<K, V>, K, V>() {
+private class CheckingMapBuilderEntries<K, V> internal constructor(
+    val backing: CheckingMapBuilder<K, V>
+) : AbstractCheckingMapBuilderEntrySet<MutableMap.MutableEntry<K, V>, K, V>() {
 
     override val size: Int get() = backing.size
     override fun isEmpty(): Boolean = backing.isEmpty()
@@ -686,74 +693,4 @@ private class MapBuilderEntries<K, V> internal constructor(
         backing.checkIsMutable()
         return super.retainAll(elements)
     }
-}
-
-internal class SerializedMap(
-    private var map: Map<*, *>
-) : Externalizable {
-
-    constructor() : this(emptyMap<Any?, Any?>()) // for deserialization
-
-    override fun writeExternal(output: java.io.ObjectOutput) {
-        output.writeByte(0) // flags
-        output.writeInt(map.size)
-        for (entry in map) {
-            output.writeObject(entry.key)
-            output.writeObject(entry.value)
-        }
-    }
-
-    override fun readExternal(input: java.io.ObjectInput) {
-        val flags = input.readByte().toInt()
-        if (flags != 0) {
-            throw InvalidObjectException("Unsupported flags value: $flags")
-        }
-        val size = input.readInt()
-        if (size < 0) throw InvalidObjectException("Illegal size value: $size.")
-        map = buildMap<Any?, Any?>(size) {
-            repeat(size) {
-                val key = input.readObject()
-                val value = input.readObject()
-                put(key, value)
-            }
-        }
-    }
-
-    private fun readResolve(): Any = map
-
-    companion object {
-        private const val serialVersionUID: Long = 0L
-    }
-}
-
-internal fun <E> arrayOfUninitializedElements(size: Int): Array<E> {
-    require(size >= 0) { "capacity must be non-negative." }
-    @Suppress("UNCHECKED_CAST")
-    return arrayOfNulls<Any?>(size) as Array<E>
-}
-
-internal fun <T> Array<T>.copyOfUninitializedElements(newSize: Int): Array<T> {
-    @Suppress("UNCHECKED_CAST")
-    return copyOf(newSize) as Array<T>
-}
-
-internal fun <E> Array<E>.resetAt(index: Int) {
-    @Suppress("UNCHECKED_CAST")
-    (this as Array<Any?>)[index] = null
-}
-
-internal fun <E> Array<E>.resetRange(fromIndex: Int, toIndex: Int) {
-    for (index in fromIndex until toIndex) resetAt(index)
-}
-
-private const val maxArraySize = Int.MAX_VALUE - 8
-
-internal fun newCapacity(oldCapacity: Int, minCapacity: Int): Int {
-    // overflow-conscious
-    var newCapacity = oldCapacity + (oldCapacity shr 1)
-    if (newCapacity - minCapacity < 0)
-        newCapacity = minCapacity
-    if (newCapacity - maxArraySize > 0)
-        newCapacity = if (minCapacity > maxArraySize) Int.MAX_VALUE else maxArraySize
-    return newCapacity
 }
