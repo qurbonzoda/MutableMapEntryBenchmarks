@@ -31,6 +31,20 @@ public open class MapBuilderBench {
         return sum
     }
 
+    // For running with `-wm BULK`
+    // It fails at some point in iteration. Specifically, when the `sum` gets >= `size`
+    // The exception is thrown upon iterator.next() invocation
+    @Benchmark
+    fun iterateEntryFail(): Int {
+        var sum = 0
+        for (entry in mapBuilder) {
+            val sumString = sum.toString()
+            mapBuilder[sumString] = sumString
+            sum += entry.key.length + entry.value.length
+        }
+        return sum
+    }
+
     @Benchmark
     fun iterateKeyValue(): Int {
         var sum = 0
