@@ -2,6 +2,8 @@ package bench
 
 import kotlinx.benchmark.*
 import org.openjdk.jmh.annotations.Fork
+import org.openjdk.jmh.infra.IterationParams
+import org.openjdk.jmh.runner.IterationType
 
 @Fork(1)
 @State(Scope.Benchmark)
@@ -14,11 +16,18 @@ public open class MapBuilderBench {
     private var mapBuilder = MapBuilder<String, String>()
 
     @Setup
-    fun setup() {
+    fun setup(params: IterationParams) {
         mapBuilder = MapBuilder()
 
         for (i in 0..<size) {
             mapBuilder[i.toString()] = (i shl 1).toString()
+        }
+
+        if (params.type == IterationType.WARMUP) {
+            val firstEntry = mapBuilder.entries.first()
+            val (lastKey, lastValue) = mapBuilder.entries.last()
+            mapBuilder[lastKey + firstEntry.key] = lastValue + firstEntry.value
+            mapBuilder.containsKey(firstEntry.key) // no CME when accessing firstEntry.key
         }
     }
 
