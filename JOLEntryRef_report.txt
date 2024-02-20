@@ -26,3 +26,15 @@ OFF  SZ                       TYPE DESCRIPTION                 VALUE
  20   4   bench.CheckingMapBuilder EntryRef.map                N/A
 Instance size: 24 bytes
 Space losses: 0 bytes internal + 0 bytes external = 0 bytes total
+
+bench.CachingMapBuilder$EntryRef object internals:
+OFF  SZ                      TYPE DESCRIPTION                 VALUE
+  0   8                           (object header: mark)       N/A
+  8   4                           (object header: class)      N/A
+ 12   4                       int EntryRef.index              N/A
+ 16   4                       int EntryRef.expectedModCount   N/A
+ 20   4   bench.CachingMapBuilder EntryRef.map                N/A
+ 24   4          java.lang.Object EntryRef.key                N/A
+ 28   4          java.lang.Object EntryRef.value              N/A
+Instance size: 32 bytes
+Space losses: 0 bytes internal + 0 bytes external = 0 bytes total

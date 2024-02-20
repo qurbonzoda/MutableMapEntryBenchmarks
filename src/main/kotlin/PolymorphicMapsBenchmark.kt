@@ -17,7 +17,7 @@ open class PolymorphicMapsBenchmark {
     @Param("false", "true")
     var forceCME: Boolean = false
 
-    @Param("BASELINE", "CHECKING")
+    @Param("BASELINE", "CHECKING", "CACHING")
     var mapType: String = "BASELINE"
 
     var maps: Array<Map<String, String>> = allocateMaps()
@@ -31,7 +31,7 @@ open class PolymorphicMapsBenchmark {
     }
 
     private fun allocateMaps(): Array<Map<String, String>> {
-        val maps: Array<Map<String, String>> = arrayOf(HashMap(), MapBuilder(), CheckingMapBuilder())
+        val maps: Array<Map<String, String>> = arrayOf(HashMap(), MapBuilder(), CheckingMapBuilder(), CachingMapBuilder())
         maps.forEach {
             fill(it as MutableMap)
         }
@@ -59,6 +59,7 @@ open class PolymorphicMapsBenchmark {
             map = when (mapType) {
                 "BASELINE" -> maps[1] as MapBuilder<String, String>
                 "CHECKING" -> maps[2] as CheckingMapBuilder<String, String>
+                "CACHING" -> maps[3] as CachingMapBuilder<String, String>
                 else -> throw IllegalStateException("mapType=$mapType")
             }
         }

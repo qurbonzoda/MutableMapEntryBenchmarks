@@ -7,4 +7,5 @@ fun main() {
     println(VM.current().details())
     println(ClassLayout.parseClass(MapBuilder.EntryRef::class.java).toPrintable())
     println(ClassLayout.parseClass(CheckingMapBuilder.EntryRef::class.java).toPrintable())
+    println(ClassLayout.parseClass(CachingMapBuilder.EntryRef::class.java).toPrintable())
 }
