@@ -12,6 +12,7 @@ repositories {
 
 dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-benchmark-runtime:0.4.10")
+    implementation("org.openjdk.jol:jol-core:0.17")
 }
 
 benchmark {
