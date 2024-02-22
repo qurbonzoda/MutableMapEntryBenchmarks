@@ -2,8 +2,6 @@ package bench
 
 import kotlinx.benchmark.*
 import org.openjdk.jmh.annotations.Fork
-import org.openjdk.jmh.infra.IterationParams
-import org.openjdk.jmh.runner.IterationType
 
 @Fork(1)
 @State(Scope.Benchmark)
@@ -16,24 +14,11 @@ public open class CheckingMapBuilderBench {
     private var mapBuilder = CheckingMapBuilder<String, String>()
 
     @Setup
-    fun setup(params: IterationParams) {
+    fun setup() {
         mapBuilder = CheckingMapBuilder()
 
         for (i in 0..<size) {
             mapBuilder[i.toString()] = (i shl 1).toString()
-        }
-
-        if (params.type == IterationType.WARMUP) {
-            val firstEntry = mapBuilder.entries.first()
-            val (lastKey, lastValue) = mapBuilder.entries.last()
-            mapBuilder[lastKey + firstEntry.key] = lastValue + firstEntry.value
-            try {
-                mapBuilder.containsKey(firstEntry.key) // CME when accessing firstEntry.key
-            } catch (_: ConcurrentModificationException) {
-                println("### Caught CME")
-                // ignore
-            }
-            mapBuilder[lastKey] = lastValue
         }
     }
 
@@ -41,20 +26,6 @@ public open class CheckingMapBuilderBench {
     fun iterateEntry(): Int {
         var sum = 0
         for (entry in mapBuilder) {
-            sum += entry.key.length + entry.value.length
-        }
-        return sum
-    }
-
-    // For running with `-wm BULK`
-    // It fails at some point in iteration. Specifically, when the `sum` gets >= `size`
-    // The exception is thrown upon EntryRef.key access
-    @Benchmark
-    fun iterateEntryFail(): Int {
-        var sum = 0
-        for (entry in mapBuilder) {
-            val sumString = sum.toString()
-            mapBuilder[sumString] = sumString
             sum += entry.key.length + entry.value.length
         }
         return sum
