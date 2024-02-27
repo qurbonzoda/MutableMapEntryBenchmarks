@@ -1,0 +1,181 @@
+[
+    {
+        "jmhVersion" : "1.21",
+        "benchmark" : "bench.CachingMapBuilderBench.storeEntries",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 1,
+        "jvm" : "/Library/Java/JavaVirtualMachines/amazon-corretto-11.jdk/Contents/Home/bin/java",
+        "jvmArgs" : [
+        ],
+        "jdkVersion" : "11.0.11",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "11.0.11+9-LTS",
+        "warmupIterations" : 20,
+        "warmupTime" : "1 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 10,
+        "measurementTime" : "1 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "size" : "10000"
+        },
+        "primaryMetric" : {
+            "score" : 11613.136429601907,
+            "scoreError" : 99.10270276463562,
+            "scoreConfidence" : [
+                11514.033726837271,
+                11712.239132366543
+            ],
+            "scorePercentiles" : {
+                "0.0" : 11445.67215567662,
+                "50.0" : 11638.371872644551,
+                "90.0" : 11666.061051514449,
+                "95.0" : 11666.641998393785,
+                "99.0" : 11666.641998393785,
+                "99.9" : 11666.641998393785,
+                "99.99" : 11666.641998393785,
+                "99.999" : 11666.641998393785,
+                "99.9999" : 11666.641998393785,
+                "100.0" : 11666.641998393785
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    11637.182487930222,
+                    11445.67215567662,
+                    11577.571862908988,
+                    11666.641998393785,
+                    11660.832529600428,
+                    11648.635613549659,
+                    11639.561257358879,
+                    11648.725460494275,
+                    11613.91854462368,
+                    11592.622385482546
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.21",
+        "benchmark" : "bench.CheckingMapBuilderBench.storeEntries",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 1,
+        "jvm" : "/Library/Java/JavaVirtualMachines/amazon-corretto-11.jdk/Contents/Home/bin/java",
+        "jvmArgs" : [
+        ],
+        "jdkVersion" : "11.0.11",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "11.0.11+9-LTS",
+        "warmupIterations" : 20,
+        "warmupTime" : "1 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 10,
+        "measurementTime" : "1 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "size" : "10000"
+        },
+        "primaryMetric" : {
+            "score" : 19122.678768478996,
+            "scoreError" : 93.98420243548566,
+            "scoreConfidence" : [
+                19028.694566043512,
+                19216.66297091448
+            ],
+            "scorePercentiles" : {
+                "0.0" : 18957.89293292433,
+                "50.0" : 19138.33188210189,
+                "90.0" : 19175.50866167917,
+                "95.0" : 19176.9617908294,
+                "99.0" : 19176.9617908294,
+                "99.9" : 19176.9617908294,
+                "99.99" : 19176.9617908294,
+                "99.999" : 19176.9617908294,
+                "99.9999" : 19176.9617908294,
+                "100.0" : 19176.9617908294
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    19130.66499064397,
+                    19099.961402177916,
+                    19162.430499327133,
+                    19134.904509553024,
+                    19115.46653077773,
+                    19141.759254650762,
+                    19159.255028925247,
+                    19176.9617908294,
+                    19147.49074498044,
+                    18957.89293292433
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.21",
+        "benchmark" : "bench.MapBuilderBench.storeEntries",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 1,
+        "jvm" : "/Library/Java/JavaVirtualMachines/amazon-corretto-11.jdk/Contents/Home/bin/java",
+        "jvmArgs" : [
+        ],
+        "jdkVersion" : "11.0.11",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "11.0.11+9-LTS",
+        "warmupIterations" : 20,
+        "warmupTime" : "1 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 10,
+        "measurementTime" : "1 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "size" : "10000"
+        },
+        "primaryMetric" : {
+            "score" : 19973.25628956954,
+            "scoreError" : 84.09020656580542,
+            "scoreConfidence" : [
+                19889.166083003736,
+                20057.346496135346
+            ],
+            "scorePercentiles" : {
+                "0.0" : 19833.981656650176,
+                "50.0" : 19994.755747950454,
+                "90.0" : 20024.575544175295,
+                "95.0" : 20026.800643030467,
+                "99.0" : 20026.800643030467,
+                "99.9" : 20026.800643030467,
+                "99.99" : 20026.800643030467,
+                "99.999" : 20026.800643030467,
+                "99.9999" : 20026.800643030467,
+                "100.0" : 20026.800643030467
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    19994.51314100818,
+                    20026.800643030467,
+                    20004.549654478742,
+                    19994.99835489273,
+                    19927.12776214546,
+                    19978.100723801945,
+                    19971.025741170775,
+                    19998.698273784797,
+                    20002.76694473215,
+                    19833.981656650176
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    }
+]
+
+
