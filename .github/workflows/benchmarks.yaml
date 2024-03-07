@@ -1,0 +1,144 @@
+name: Benchmarks
+on:
+  workflow_dispatch:
+
+jobs:
+  jvm-linux-x86-iterate:
+    #if: false
+    runs-on: ubuntu-latest
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4.0.0
+        with:
+          java-version: '21'
+          distribution: 'liberica'
+          architecture: x64
+
+      - name: Run benchmarks
+        run: ./gradlew iterateBenchmark
+
+      - name: Copy results
+        run: |
+          REPORTS_DIR=build/reports/benchmarks/iterate
+          DIR_NAME=$(ls $REPORTS_DIR | head -n1)
+          mkdir -p results
+          ls $REPORTS_DIR/$DIR_NAME/*.json | while read report_json; do arch_name=$(basename $report_json); cp $report_json results/$DIR_NAME-kn-$arch_name; done
+
+      - name: Publish results
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.TOKEN }}
+          add-paths: results/*.json
+          committer: GitHub <noreply@github.com>
+          author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+          signoff: false
+          branch: results-${{ github.job }}
+          title: 'Benchmarking report of iterateBenchmark'
+
+  jvm-linux-x86-storeEntries:
+    #if: false
+    runs-on: ubuntu-latest
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4.0.0
+        with:
+          java-version: '21'
+          distribution: 'liberica'
+          architecture: x64
+
+      - name: Run benchmarks
+        run: ./gradlew storeEntriesBenchmark
+
+      - name: Copy results
+        run: |
+          REPORTS_DIR=build/reports/benchmarks/storeEntries
+          DIR_NAME=$(ls $REPORTS_DIR | head -n1)
+          mkdir -p results
+          ls $REPORTS_DIR/$DIR_NAME/*.json | while read report_json; do arch_name=$(basename $report_json); cp $report_json results/$DIR_NAME-kn-$arch_name; done
+
+      - name: Publish results
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.TOKEN }}
+          add-paths: results/*.json
+          committer: GitHub <noreply@github.com>
+          author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+          signoff: false
+          branch: results-${{ github.job }}
+          title: 'Benchmarking report of storeEntriesBenchmark'
+
+  jvm-linux-x86-polymorphicIterate:
+    #if: false
+    runs-on: ubuntu-latest
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4.0.0
+        with:
+          java-version: '21'
+          distribution: 'liberica'
+          architecture: x64
+
+      - name: Run benchmarks
+        run: ./gradlew polymorphicIterateBenchmark
+
+      - name: Copy results
+        run: |
+          REPORTS_DIR=build/reports/benchmarks/polymorphicIterate
+          DIR_NAME=$(ls $REPORTS_DIR | head -n1)
+          mkdir -p results
+          ls $REPORTS_DIR/$DIR_NAME/*.json | while read report_json; do arch_name=$(basename $report_json); cp $report_json results/$DIR_NAME-kn-$arch_name; done
+
+      - name: Publish results
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.TOKEN }}
+          add-paths: results/*.json
+          committer: GitHub <noreply@github.com>
+          author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+          signoff: false
+          branch: results-${{ github.job }}
+          title: 'Benchmarking report of polymorphicIterateBenchmark'
+
+  jvm-linux-x86-polymorphicStoreEntries:
+    #if: false
+    runs-on: ubuntu-latest
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4.0.0
+        with:
+          java-version: '21'
+          distribution: 'liberica'
+          architecture: x64
+
+      - name: Run benchmarks
+        run: ./gradlew polymorphicStoreEntriesBenchmark
+
+      - name: Copy results
+        run: |
+          REPORTS_DIR=build/reports/benchmarks/polymorphicStoreEntries
+          DIR_NAME=$(ls $REPORTS_DIR | head -n1)
+          mkdir -p results
+          ls $REPORTS_DIR/$DIR_NAME/*.json | while read report_json; do arch_name=$(basename $report_json); cp $report_json results/$DIR_NAME-kn-$arch_name; done
+
+      - name: Publish results
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.TOKEN }}
+          add-paths: results/*.json
+          committer: GitHub <noreply@github.com>
+          author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+          signoff: false
+          branch: results-${{ github.job }}
+          title: 'Benchmarking report of polymorphicStoreEntriesBenchmark'
