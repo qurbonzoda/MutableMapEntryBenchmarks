@@ -22,10 +22,14 @@ benchmark {
             include("iterateKeyValue")
             include("iterateAndSetValue")
             exclude("PolymorphicMapsBenchmark")
+
+            param("size", 1000)
         }
         val storeEntries by creating {
             include("storeEntries")
             exclude("PolymorphicMapsBenchmark")
+
+            param("size", 1000)
         }
         val polymorphicIterate by creating {
             include("PolymorphicMapsBenchmark.iterateEntry")
