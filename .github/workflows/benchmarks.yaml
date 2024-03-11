@@ -36,7 +36,7 @@ jobs:
           author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
           signoff: false
           branch: results-${{ github.job }}
-          title: 'Benchmarking report'
+          title: 'Benchmarking report of iterateBenchmark'
 
   jvm-linux-x86-storeEntries:
     #if: false
@@ -71,4 +71,4 @@ jobs:
           author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
           signoff: false
           branch: results-${{ github.job }}
-          title: 'Benchmarking report'
+          title: 'Benchmarking report of storeEntriesBenchmark'

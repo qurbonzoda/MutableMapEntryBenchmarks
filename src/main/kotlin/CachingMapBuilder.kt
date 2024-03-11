@@ -590,7 +590,7 @@ internal class CachingMapBuilder<K, V> private constructor(
             val valuesArray = map.allocateValuesArray()
             val oldValue = valuesArray[index]
             valuesArray[index] = newValue
-            value = newValue
+            value = map.valuesArray!![index]
             return oldValue
         }
 
